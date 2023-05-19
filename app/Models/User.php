@@ -24,6 +24,7 @@ class User extends Authenticatable
         'google_id',
         'email_verified_at',
         'avatar',
+        'role_id',
     ];
 
     /**
@@ -45,4 +46,19 @@ class User extends Authenticatable
     protected $casts = [
         'password' => 'hashed',
     ];
+
+    public function isAdmin()
+    {
+        return $this->role->role_name == Role::$admin;
+    }
+
+    public function isUser()
+    {
+        return $this->role->role_name == Role::$user;
+    }
+
+    public function role()
+    {
+        return $this->belongsTo('App\Role', 'role_id', 'id');
+    }
 }

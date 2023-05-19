@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use PHPUnit\TextUI\Configuration\Group;
 use \App\Http\Controllers\Auth\RegisterController;
+use \App\Http\Controllers\Auth\GoogleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +22,19 @@ use \App\Http\Controllers\Auth\RegisterController;
 //     return $request->user();
 // });
 
-// Route::post('regsiter', [RegisterController::class, 'register']);
+Route::get('unauthorized', function() {
+    return response()->json([
+        'status'=> false,
+        'message' => 'Unauthorized',
+    ]);
+});
 
-Route::post('auth/google', [RegisterController::class, 'googleRegsiter']);
+Route::post('auth/google', [GoogleController::class, 'auth']);
+
+Route::post('auth/admin/logidsn', [LoginController::class, 'login']);
+
+Route::group(['middleware' => ['auth:sanctum']], function () {
+
+    Route::post('auth/regsiter', [RegisterController::class, 'register']);
+    
+});

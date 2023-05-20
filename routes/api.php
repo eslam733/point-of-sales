@@ -18,9 +18,9 @@ use \App\Http\Controllers\Auth\GoogleController;
 |
 */
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
+});
 
 Route::get('unauthorized', function() {
     return response()->json([
@@ -29,12 +29,14 @@ Route::get('unauthorized', function() {
     ]);
 });
 
-Route::post('auth/google', [GoogleController::class, 'auth']);
-
-Route::post('auth/admin/logidsn', [LoginController::class, 'login']);
-
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::post('auth/regsiter', [RegisterController::class, 'register']);
     
 });
+
+Route::post('auth/google', [GoogleController::class, 'auth']);
+
+Route::post('auth/admin/login', [LoginController::class, 'login']);
+
+

@@ -41,10 +41,10 @@ class RegisterController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest');
     }
 
     public function register(Request $request) {
+        
         $validator = Validator::make($request->all(), [
             'email' => ['required', 'unique:users', 'email'],
             'password' => ['required', 'min:7'],

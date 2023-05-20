@@ -21,6 +21,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'google_id',
+        'email_verified_at',
+        'avatar',
+        'role_id',
     ];
 
     /**
@@ -31,6 +35,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'google_id',
     ];
 
     /**
@@ -39,7 +44,21 @@ class User extends Authenticatable
      * @var array<string, string>
      */
     protected $casts = [
-        'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function isAdmin()
+    {
+        return $this->role->role_name == Role::$admin;
+    }
+
+    public function isUser()
+    {
+        return $this->role->role_name == Role::$user;
+    }
+
+    public function role()
+    {
+        return $this->belongsTo('App\Role', 'role_id', 'id');
+    }
 }

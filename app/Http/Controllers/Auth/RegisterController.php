@@ -9,6 +9,8 @@ use App\Providers\RouteServiceProvider;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -44,7 +46,9 @@ class RegisterController extends Controller
     }
 
     public function register(Request $request) {
-        
+
+        Gate::authorize('createUser', Auth()->user());
+
         $validator = Validator::make($request->all(), [
             'email' => ['required', 'unique:users', 'email'],
             'password' => ['required', 'min:7'],

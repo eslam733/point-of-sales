@@ -36,7 +36,7 @@ class Role extends Model
     {
         $id = 1; // user role id
 
-        $role = self::where('name', self::$admin)->first();
+        $role = self::where('role_name', self::$admin)->first();
 
         return !empty($role) ? $role->id : $id;
     }
@@ -45,8 +45,7 @@ class Role extends Model
     {
         $id = 1; // user role id
 
-        $role = self::where('name', self::$user)->first();
-        dd($role);
+        $role = self::where('role_name', self::$user)->first();
         return !empty($role) ? $role->id : $id;
     }
 

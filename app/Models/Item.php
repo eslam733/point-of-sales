@@ -15,11 +15,13 @@ class Item extends Model
         'updated_at',
     ];
 
-    public function category() {
+    public function category()
+    {
         return $this->belongsTo('App\Category', 'category_id', 'id');
     }
 
-    public function features() {
+    public function features()
+    {
         return $this->hasMany('App\FeatureItem', 'item_id', 'id');
     }
 

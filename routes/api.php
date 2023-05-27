@@ -8,6 +8,7 @@ use \App\Http\Controllers\Auth\GoogleController;
 use \App\Http\Controllers\CategoryController;
 use \App\Http\Controllers\ItemController;
 use \App\Http\Controllers\FeatureItemController;
+use \App\Http\Controllers\ReservationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +51,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::group(['name' => 'FeatureItem'], function () {
         Route::post('featureItem/create', [FeatureItemController::class, 'store']);
+    });
+
+    Route::group(['name' => 'Reservation'], function () {
+        Route::post('reservation/create', [ReservationController::class, 'store']);
+        Route::post('reservation/getDatesForItem', [ReservationController::class, 'getDatesForItem']);
     });
     
 });

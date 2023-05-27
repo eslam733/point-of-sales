@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('item_id')->unsigned();
             $table->integer('feature_item_id')->unsigned();
             $table->foreign('reservation_id')
-                ->on('reservation')->references('id')->cascadeOnUpdate()->cascadeOnDelete();
+                ->on('reservations')->references('id')->cascadeOnUpdate()->cascadeOnDelete();
 
             $table->foreign('item_id')->on('items')->references('id')->cascadeOnUpdate()->cascadeOnDelete();
 

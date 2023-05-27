@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('feature_items', function (Blueprint $table) {
+        Schema::create('reservation', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
+            $table->dateTime('start_date');
+            $table->dateTime('end_date');
             $table->float('price');
-            $table->integer('item_id')->unsigned();
-            $table->foreign('item_id')->on('items')->references('id')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->integer('user_id')->unsigned();
+            $table->foreign('user_id')->on('users')->references('id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->timestamps();
         });
     }
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('features_items');
+        Schema::dropIfExists('reservation');
     }
 };

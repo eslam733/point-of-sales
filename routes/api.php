@@ -7,6 +7,7 @@ use \App\Http\Controllers\Auth\RegisterController;
 use \App\Http\Controllers\Auth\GoogleController;
 use \App\Http\Controllers\CategoryController;
 use \App\Http\Controllers\ItemController;
+use \App\Http\Controllers\FeatureItemController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,6 +46,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::group(['name' => 'Item'], function () {
         Route::post('item/create', [ItemController::class, 'store']);
         Route::delete('item/{id}', [ItemController::class, 'destroy']);
+    });
+
+    Route::group(['name' => 'FeatureItem'], function () {
+        Route::post('featureItem/create', [FeatureItemController::class, 'store']);
     });
     
 });

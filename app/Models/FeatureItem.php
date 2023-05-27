@@ -15,7 +15,8 @@ class FeatureItem extends Model
         'updated_at',
     ];
 
-    public function item() {
+    public function item()
+    {
         return $this->belongsTo('App\Item', 'item_id', 'id');
     }
 

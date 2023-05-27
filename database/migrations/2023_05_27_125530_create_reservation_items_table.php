@@ -11,12 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('feature_items', function (Blueprint $table) {
+        Schema::create('reservation_items', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
-            $table->float('price');
+            $table->integer('reservation_id')->unsigned();
             $table->integer('item_id')->unsigned();
+            $table->integer('feature_item_id')->unsigned();
+            $table->foreign('reservation_id')
+                ->on('reservation')->references('id')->cascadeOnUpdate()->cascadeOnDelete();
+
             $table->foreign('item_id')->on('items')->references('id')->cascadeOnUpdate()->cascadeOnDelete();
+
+            $table->foreign('feature_item_id')
+                ->on('feature_items')->references('id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->timestamps();
         });
     }
@@ -26,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('features_items');
+        Schema::dropIfExists('reservation_items');
     }
 };

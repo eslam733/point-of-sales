@@ -45,9 +45,10 @@ class RegisterController extends Controller
     {
     }
 
-    public function register(Request $request) {
+    public function register(Request $request)
+    {
 
-        Gate::authorize('createUser', Auth()->user());
+        $this->authorize('createUser', User::class);
 
         $validator = Validator::make($request->all(), [
             'email' => ['required', 'unique:users', 'email'],
@@ -68,7 +69,7 @@ class RegisterController extends Controller
             'password' => Hash::make($request['password']),
         ]);
 
-        if(!empty($user)) {
+        if (!empty($user)) {
             return $this->successResponse('User has been created', $user, 200);
         } else {
             return $this->errorResponse('Can\'t create user', [], 400);

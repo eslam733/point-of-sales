@@ -18,24 +18,26 @@ class GoogleController extends Controller
         $validator = Validator::make($request->all(), [
             'accessToken' => ['required',],
         ]);
-    
+
         if ($validator->fails()) {
             return $this->errorResponse('Validation error', $validator->errors(), 400);
         }
 
         try {
             $user = Socialite::driver('google')->userFromToken($request->get('accessToken'));
-            // $user = Socialite::driver('google')->user();
             $finduser = User::where('google_id', $user->id)->first();
+
             if ($finduser) {
+
                 User::where('email', $user->email)->update([
                     'avatar' => $user->avatar
                 ]);
                 $user = User::where('email', $user->email)->first();
                 $user['token'] = $user->createToken($user->email)->plainTextToken;
-                return $this->successResponse('Login success', $user, 200);
+
             } else {
-                $newUser = User::create([
+
+                $user = User::create([
                     'name' => $user->name,
                     'email' => $user->email,
                     'google_id' => $user->id,
@@ -44,9 +46,12 @@ class GoogleController extends Controller
                     'role_id' => Role::getUserRoleId(),
                     'password' => encrypt(env('DUMMY_GOOGLE_PASSWORD'))
                 ]);
-                $newUser['token'] = $newUser->createToken($newUser->email)->plainTextToken;
-                return $this->successResponse('Login success', $newUser, 200);
+
+                $user['token'] = $user->createToken($user->email)->plainTextToken;
             }
+
+            return $this->successResponse('Login success', $user, 200);
+
         } catch (Exception $e) {
             return $this->errorResponse('Access token expert', [], 401);
         }

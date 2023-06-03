@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FeatureItem;
+use App\Models\Item;
 use App\Models\Reservation;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -25,10 +27,40 @@ class ReservationController extends Controller
 
     public function store(Request $request)
     {
-        $currentDateTime = Carbon::now();
-        $currentDay = $currentDateTime->format($this->dayFormat);
+
+        $validator = Validator::make($request->all(), [
+            'startDate' => ['required', 'date_format:' . $this->dayFormat . ' ' . $this->timeFormat],
+            'endDate' => ['required', 'date_format:' . $this->dayFormat . ' ' . $this->timeFormat],
+            'item_id' => ['required', 'integer', 'exists:items,id'],
+            'features_item' => ['required', 'array', 'exists:feature_items,id'],
+        ]);
+    
+        if ($validator->fails()) {
+            return $this->errorResponse('Validation error', $validator->errors(), 400);
+        }
+
+        $data = $request->all();
+
+        $status = $this->checkTimeAvailability($data['startDate'], $data['endDate']);
+
+        if (!$status) {
+            return $this->errorResponse('Sorry, this time not available', [], 400);
+        }
+
+        $price = FeatureItem
+            ::select('price')
+            ->whereIn('id', $data['features_item'])
+            ->sum(DB::raw('price'));
         
-        return $this->successResponse('reservation created', $currentDay, 200);
+        $reservation = Reservation::create([
+            'start_date' => $data['startDate'],
+            'end_date' => $data['endDate'],
+            'price' => $price,
+            'user_id' => auth()->id(),
+            'item_id' => $data['item_id'],
+        ]);
+
+        return $this->successResponse('reservation created', $reservation, 200);
 
     }
 
@@ -55,9 +87,8 @@ class ReservationController extends Controller
             $end = $start->copy()->addHour();
             
             $status = $this->checkTimeAvailability(
-                $day,
-                $start->format($this->timeFormat),
-                $end->format($this->timeFormat),
+                $day . ' ' . $start->format($this->timeFormat),
+                $day . ' ' . $end->format($this->timeFormat),
             );
 
             array_push($avaliableTimes, array(
@@ -72,10 +103,10 @@ class ReservationController extends Controller
         return $this->successResponse('Avalible dates', $avaliableTimes, 200);
     }
 
-    private function checkTimeAvailability($day, $startTime, $endTime)
+    private function checkTimeAvailability($startTime, $endTime)
     {
-        $startDate = Carbon::createFromTimeString($day . ' ' . $startTime);
-        $endDate = Carbon::createFromTimeString($day . ' ' . $endTime);
+        $startDate = Carbon::createFromTimeString($startTime);
+        $endDate = Carbon::createFromTimeString($endTime);
         
         $status = $startDate->isAfter(Carbon::now());
 
@@ -96,5 +127,21 @@ class ReservationController extends Controller
             $startDate->addHour();
         }
         return $status;
+    }
+
+    public function getReservation(Request $request)
+    {
+
+        $user = auth()->user();
+
+        if ($user->isAdmin()) {
+            $reservation = Reservation::paginate(10);
+        } else {
+            $reservation = Reservation::where('user_id', $user->id)->paginate(10);
+        }
+
+        
+
+        return $this->successResponse('Reservation', $reservation, 200);
     }
 }

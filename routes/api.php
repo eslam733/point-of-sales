@@ -56,6 +56,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::group(['name' => 'Reservation'], function () {
         Route::post('reservation/create', [ReservationController::class, 'store']);
         Route::post('reservation/getDatesForItem', [ReservationController::class, 'getDatesForItem']);
+        Route::get('reservation/getReservation', [ReservationController::class, 'getReservation']);
     });
     
 });

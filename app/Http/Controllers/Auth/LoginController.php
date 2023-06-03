@@ -47,7 +47,7 @@ class LoginController extends Controller
     {
         // validate the form data
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email|exists:users',
+            'email' => 'required|email|exists:users,email',
             'password' => 'required|min:4',
         ]);
     

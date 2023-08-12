@@ -62,7 +62,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::group(['name' => 'Users', 'prefix' => 'users'], function () {
         Route::get('/', [UserController::class, 'index']);
-        Route::get('/delete/{id}', [UserController::class, 'destory']);
+        Route::delete('/delete/{id}', [UserController::class, 'destory']);
     });
     
 });

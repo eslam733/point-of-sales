@@ -9,6 +9,7 @@ use \App\Http\Controllers\CategoryController;
 use \App\Http\Controllers\ItemController;
 use \App\Http\Controllers\FeatureItemController;
 use \App\Http\Controllers\ReservationController;
+use \App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,6 +58,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('reservation/create', [ReservationController::class, 'store']);
         Route::post('reservation/getDatesForItem', [ReservationController::class, 'getDatesForItem']);
         Route::get('reservation/getReservation', [ReservationController::class, 'getReservation']);
+    });
+
+    Route::group(['name' => 'Users', 'prefix' => 'users'], function () {
+        Route::get('/', [UserController::class, 'index']);
     });
     
 });

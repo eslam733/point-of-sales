@@ -12,8 +12,9 @@ class Role extends Model
     public $timestamps = false;
     static $admin = 'admin';
     static $user = 'user';
+    static $subAdmin = 'sub_admin';
 
-    static $roles = ['admin', 'user'];
+    static $roles = ['admin', 'user', 'sub_admin'];
 
     protected $guarded = ['id'];
 
@@ -23,6 +24,8 @@ class Role extends Model
                 return 'Admins';
             case Role::$user:
                 return 'Users';
+            case Role::$subAdmin:
+                return 'Sub Admin';
         }
     }
 
@@ -46,6 +49,14 @@ class Role extends Model
         $id = 1; // user role id
 
         $role = self::where('role_name', self::$user)->first();
+        return !empty($role) ? $role->id : $id;
+    }
+    
+    public static function getSubAdminRoleId()
+    {
+        $id = 1; // user role id
+
+        $role = self::where('role_name', self::$subAdmin)->first();
         return !empty($role) ? $role->id : $id;
     }
 

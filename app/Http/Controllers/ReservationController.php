@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\FeatureItem;
 use App\Models\Item;
 use App\Models\Reservation;
+use App\Models\ReservationItem;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -51,7 +52,11 @@ class ReservationController extends Controller
             ::select('price')
             ->whereIn('id', $data['features_item'])
             ->sum(DB::raw('price'));
-        
+
+        $featuresItemsIds = FeatureItem
+        ::whereIn('id', $data['features_item'])
+        ->pluck('id');
+
         $reservation = Reservation::create([
             'start_date' => $data['startDate'],
             'end_date' => $data['endDate'],
@@ -59,6 +64,17 @@ class ReservationController extends Controller
             'user_id' => auth()->id(),
             'item_id' => $data['item_id'],
         ]);
+
+        $itemsToInsert = [];
+
+        foreach ($featuresItemsIds as $featureItemId) {
+            $itemsToInsert[] = [
+                'reservation_id' => $reservation->id,
+                'feature_item_id' => $featureItemId,
+            ];
+        }
+
+        ReservationItem::insert($itemsToInsert);
 
         return $this->successResponse('reservation created', $reservation, 200);
 
@@ -135,12 +151,10 @@ class ReservationController extends Controller
         $user = auth()->user();
 
         if ($user->isAdmin()) {
-            $reservation = Reservation::paginate(10);
+            $reservation = Reservation::with('reservationItems')->get();
         } else {
-            $reservation = Reservation::where('user_id', $user->id)->paginate(10);
+            $reservation = Reservation::with('reservationItems')->where('user_id', $user->id)->get();
         }
-
-        
 
         return $this->successResponse('Reservation', $reservation, 200);
     }

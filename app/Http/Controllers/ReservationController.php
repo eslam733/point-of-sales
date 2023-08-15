@@ -151,9 +151,18 @@ class ReservationController extends Controller
         $user = auth()->user();
 
         if ($user->isAdmin()) {
-            $reservation = Reservation::with('reservationItems')->get();
+            $reservation = Reservation
+                ::with('user')
+                ->with('item')
+                ->with('reservationItems.featureItem')
+                ->get();
         } else {
-            $reservation = Reservation::with('reservationItems')->where('user_id', $user->id)->get();
+            $reservation = Reservation
+                ::with('user')
+                ->with('item')
+                ->with('reservationItems.featureItem')
+                ->where('user_id', $user->id)
+                ->get();
         }
 
         return $this->successResponse('Reservation', $reservation, 200);

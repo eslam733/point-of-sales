@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\Auth\RegisterController;
@@ -63,6 +64,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::group(['name' => 'Users', 'prefix' => 'users'], function () {
         Route::get('/', [UserController::class, 'index']);
         Route::delete('/delete/{id}', [UserController::class, 'destory']);
+    });
+
+    Route::group(['name' => 'Notifications', 'prefix' => 'notifications'], function () {
+        Route::get('/', [NotificationController::class, 'show']);
     });
     
 });

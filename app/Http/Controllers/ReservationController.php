@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\SendNotifications;
 use App\Models\FeatureItem;
 use App\Models\Item;
 use App\Models\Reservation;
@@ -75,6 +76,10 @@ class ReservationController extends Controller
         }
 
         ReservationItem::insert($itemsToInsert);
+
+        $item = Item::where('id', $data['item_id'])->first();
+        SendNotifications::dispatch(auth()->id(),
+        'new reservation at ' . $data['startDate'] . ', item: ' . $item->name);
 
         return $this->successResponse('reservation created', $reservation, 200);
 

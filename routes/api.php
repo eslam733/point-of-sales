@@ -64,6 +64,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::group(['name' => 'Users', 'prefix' => 'users'], function () {
         Route::get('/', [UserController::class, 'index']);
         Route::delete('/delete/{id}', [UserController::class, 'destory']);
+        Route::post('/updatePhone/{id}', [UserController::class, 'updatePhone']);
+        Route::get('/checkNumber/{id}', [UserController::class, 'checkNumber']);
     });
 
     Route::group(['name' => 'Notifications', 'prefix' => 'notifications'], function () {

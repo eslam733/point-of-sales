@@ -22,7 +22,7 @@ class Item extends Model
 
     public function features()
     {
-        return $this->hasMany('App\FeatureItem', 'item_id', 'id');
+        return $this->hasMany(FeatureItem::class, 'item_id', 'id');
     }
 
 }

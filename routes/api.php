@@ -46,9 +46,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('category/create', [CategoryController::class, 'store']);
     });
 
-    Route::group(['name' => 'Item'], function () {
-        Route::post('item/create', [ItemController::class, 'store']);
-        Route::delete('item/{id}', [ItemController::class, 'destroy']);
+    Route::group(['name' => 'Item', 'prefix' => 'item'], function () {
+        Route::get('/', [ItemController::class, 'index']);
+        Route::post('/create', [ItemController::class, 'store']);
+        Route::delete('/{id}', [ItemController::class, 'destroy']);
     });
 
     Route::group(['name' => 'FeatureItem'], function () {

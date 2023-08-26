@@ -8,9 +8,10 @@ use Illuminate\Support\Facades\Validator;
 
 class ItemController extends Controller
 {
-    /**
-     * Store a newly created resource in storage.
-     */
+    public function index(Request $request) {
+        return $this->successResponse('Items', Item::with('features')->get(), 200);
+    }
+    
     public function store(Request $request)
     {
         $this->authorize('createItem', Item::class);

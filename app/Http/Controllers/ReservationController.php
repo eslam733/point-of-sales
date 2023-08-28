@@ -43,7 +43,12 @@ class ReservationController extends Controller
 
         $data = $request->all();
 
-        $status = $this->checkTimeAvailability($data['startDate'], $data['endDate']);
+        $status = $this->checkTimeAvailability(
+            $data['startDate'],
+            $data['endDate'],
+            $data['item_id'],
+            $data['features_item']
+        );
 
         if (!$status) {
             return $this->errorResponse('Sorry, this time not available', [], 400);
@@ -90,12 +95,14 @@ class ReservationController extends Controller
         $validator = Validator::make($request->all(), [
             'day' => ['required', 'date_format:' . $this->dayFormat],
             'item_id' => ['required', 'integer', 'exists:items,id'],
+            'features_item' => ['required', 'array', 'exists:feature_items,id'],
         ]);
     
         if ($validator->fails()) {
             return $this->errorResponse('Validation error', $validator->errors(), 400);
         }
 
+        $data = $request->all();
         $avaliableTimes = [];
 
         $day = $request->get('day'); // string date
@@ -110,6 +117,8 @@ class ReservationController extends Controller
             $status = $this->checkTimeAvailability(
                 $day . ' ' . $start->format($this->timeFormat),
                 $day . ' ' . $end->format($this->timeFormat),
+                $data['item_id'],
+                $data['features_item'],
             );
 
             array_push($avaliableTimes, array(
@@ -124,7 +133,7 @@ class ReservationController extends Controller
         return $this->successResponse('Avalible dates', $avaliableTimes, 200);
     }
 
-    private function checkTimeAvailability($startTime, $endTime)
+    private function checkTimeAvailability($startTime, $endTime, $itemId, $featuresItemsIds)
     {
         $startDate = Carbon::createFromTimeString($startTime);
         $endDate = Carbon::createFromTimeString($endTime);
@@ -136,6 +145,9 @@ class ReservationController extends Controller
             $temp = $startDate->format($this->dayFormat . ' ' . $this->timeFormat);
             
             $days = DB::table('reservations')
+            ->join('reservation_items', 'reservations.id', '=', 'reservation_items.reservation_id')
+            ->where('item_id', $itemId)
+            ->whereIn('feature_item_id', $featuresItemsIds)
             ->where('start_date', '<=', $temp)
             ->where('end_date', '>', $temp)
             ->first();

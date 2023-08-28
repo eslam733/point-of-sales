@@ -140,7 +140,7 @@ class ReservationController extends Controller
         
         $status = $startDate->isAfter(Carbon::now());
 
-        while ($status && ($startDate->isBefore($endDate) || $startDate->equalTo($endDate))) {
+        while ($status && ($startDate->isBefore($endDate))) {
 
             $temp = $startDate->format($this->dayFormat . ' ' . $this->timeFormat);
             

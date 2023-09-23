@@ -16,6 +16,8 @@ return new class extends Migration
             $table->dateTime('start_date');
             $table->dateTime('end_date');
             $table->float('price');
+            $table->integer('item_id')->unsigned();
+            $table->foreign('item_id')->on('items')->references('id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->on('users')->references('id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->timestamps();

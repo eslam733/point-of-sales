@@ -14,6 +14,6 @@ class NotificationController extends Controller
     }
 
     public function show() {
-         return $this->successResponse('notifications', Notification::with('user')->get(), 200);
+         return $this->successResponse('notifications', Notification::with('user')->where('user_id', auth()->id())->get(), 200);
     }
 }

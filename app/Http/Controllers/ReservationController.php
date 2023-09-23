@@ -146,12 +146,13 @@ class ReservationController extends Controller
             $temp = $startDate->format($this->dayFormat . ' ' . $this->timeFormat);
 
             $days = DB::table('reservations')
-            ->join('reservation_items', 'reservations.id', '=', 'reservation_items.reservation_id')
-            ->where('item_id', $itemId)
-            ->whereIn('feature_item_id', $featuresItemsIds)
-            ->where('start_date', '<=', $temp)
-            ->where('end_date', '>', $temp)
-            ->first();
+                ->join('reservation_items', 'reservations.id', '=', 'reservation_items.reservation_id')
+                ->where('item_id', $itemId)
+                ->whereIn('feature_item_id', $featuresItemsIds)
+                ->where('start_date', '<=', $temp)
+                ->where('end_date', '>', $temp)
+                ->whereIn('status', [Reservation::$pending, Reservation::$approve])
+                ->first();
 
             if (!empty($days)) {
                 $status = !$status;

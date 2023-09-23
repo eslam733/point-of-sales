@@ -10,6 +10,7 @@ use App\Models\ReservationItem;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class ReservationController extends Controller
@@ -36,7 +37,7 @@ class ReservationController extends Controller
             'item_id' => ['required', 'integer', 'exists:items,id'],
             'features_item' => ['required', 'array', 'exists:feature_items,id'],
         ]);
-    
+
         if ($validator->fails()) {
             return $this->errorResponse('Validation error', $validator->errors(), 400);
         }
@@ -97,7 +98,7 @@ class ReservationController extends Controller
             'item_id' => ['required', 'integer', 'exists:items,id'],
             'features_item' => ['required', 'array', 'exists:feature_items,id'],
         ]);
-    
+
         if ($validator->fails()) {
             return $this->errorResponse('Validation error', $validator->errors(), 400);
         }
@@ -110,10 +111,10 @@ class ReservationController extends Controller
         $time = Carbon::createFromTimeString($this->openTime);
 
         while ($time->lt($this->closeTime->copy()->subHour()) || $time->eq($this->closeTime->copy()->subHour())) {
-            
+
             $start = $time->copy();
             $end = $start->copy()->addHour();
-            
+
             $status = $this->checkTimeAvailability(
                 $day . ' ' . $start->format($this->timeFormat),
                 $day . ' ' . $end->format($this->timeFormat),
@@ -137,13 +138,13 @@ class ReservationController extends Controller
     {
         $startDate = Carbon::createFromTimeString($startTime);
         $endDate = Carbon::createFromTimeString($endTime);
-        
+
         $status = $startDate->isAfter(Carbon::now());
 
         while ($status && ($startDate->isBefore($endDate))) {
 
             $temp = $startDate->format($this->dayFormat . ' ' . $this->timeFormat);
-            
+
             $days = DB::table('reservations')
             ->join('reservation_items', 'reservations.id', '=', 'reservation_items.reservation_id')
             ->where('item_id', $itemId)
@@ -183,5 +184,52 @@ class ReservationController extends Controller
         }
 
         return $this->successResponse('Reservation', $reservation, 200);
+    }
+
+    public function changeStatus(Request $request, $id) {
+
+        $validator = Validator::make($request->all(), [
+            'status' => ['required', 'in:pending,reject,approve'],
+        ]);
+
+        if ($validator->fails()) {
+            return $this->errorResponse('Validation error', $validator->errors(), 400);
+        }
+
+        $data = $request->all();
+
+        $reservation = Reservation::with(['user', 'item', 'reservationItems' => function ($query) {
+            $query->with(['featureItem']);
+        }])->where('id', $id)->first();
+
+        if (empty($reservation)) {
+            return $this->errorResponse('Reservation not found', $validator->errors(), 404);
+        }
+
+        $reservation->update([
+            'status' => $request->get('status'),
+        ]);
+
+        $itemsTitle = '';
+
+        foreach ($reservation->reservationItems as $reservationItem) {
+            $itemsTitle .= $reservationItem->featureItem->name . ', ' ;
+        }
+
+        $mailData = [
+            'status' => $data['status'],
+            'items' => $itemsTitle,
+            'day' => explode(' ', $reservation->start_date)[0],
+            'startTime' => explode(' ', $reservation->start_date)[1],
+            'endTime' => explode(' ', $reservation->end_date)[1],
+        ];
+
+        Mail::send('reservations.reservation_status', $mailData, function ($message) use ($reservation) {
+            $message->from(env('MAIL_FROM_ADDRESS'));
+            $message->to($reservation->user->email);
+            $message->subject('Reservation Status');
+        });
+
+        return $this->successResponse('Reservation has been updated', [], 200);
     }
 }

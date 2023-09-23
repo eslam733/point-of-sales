@@ -16,7 +16,12 @@ class Reservation extends Model
         'user_id',
         'item_id',
         'price',
+        'status',
     ];
+
+    public static string $approve = 'approve';
+    public static string $reject = 'reject';
+    public static string $pending = 'pending';
 
     public function reservationItems() {
         return $this->hasMany(ReservationItem::class, 'reservation_id', 'id');

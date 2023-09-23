@@ -14,8 +14,6 @@ class NotificationController extends Controller
     }
 
     public function show() {
-        $this->authorize('viewNotifications', Notification::class);
-
          return $this->successResponse('notifications', Notification::with('user')->get(), 200);
     }
 }

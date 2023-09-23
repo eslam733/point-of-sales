@@ -225,6 +225,8 @@ class ReservationController extends Controller
             'endTime' => explode(' ', $reservation->end_date)[1],
         ];
 
+        SendNotifications::dispatch($reservation->user->id, 'Your reservation ' . $reservation->id . ' has been ' . $data['status']);
+
         Mail::send('reservations.reservation_status', $mailData, function ($message) use ($reservation) {
             $message->from(env('MAIL_FROM_ADDRESS'));
             $message->to($reservation->user->email);

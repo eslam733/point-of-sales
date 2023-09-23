@@ -40,31 +40,41 @@ Route::post('auth/admin/login', [LoginController::class, 'login']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
+    Route::group(['middleware' => ['OnlyAdmin']], function () {
+
+        Route::group(['name' => 'Category'], function () {
+            Route::post('category/create', [CategoryController::class, 'store']);
+        });
+
+        Route::group(['name' => 'Item', 'prefix' => 'item'], function () {
+            Route::get('/', [ItemController::class, 'index']);
+            Route::post('/create', [ItemController::class, 'store']);
+            Route::delete('/{id}', [ItemController::class, 'destroy']);
+        });
+
+        Route::group(['name' => 'FeatureItem'], function () {
+            Route::post('featureItem/create', [FeatureItemController::class, 'store']);
+        });
+
+        Route::group(['name' => 'Reservation', 'prefix' => 'reservation'], function () {
+            Route::get('/getReservation', [ReservationController::class, 'getReservation']);
+            Route::post('/{id}/changeStatus', [ReservationController::class, 'changeStatus']);
+        });
+
+        Route::group(['name' => 'Users', 'prefix' => 'users'], function () {
+            Route::get('/', [UserController::class, 'index']);
+            Route::delete('/delete/{id}', [UserController::class, 'destory']);
+        });
+    });
+
     Route::post('auth/regsiter', [RegisterController::class, 'register']);
 
-    Route::group(['name' => 'Category'], function () {
-        Route::post('category/create', [CategoryController::class, 'store']);
-    });
-
-    Route::group(['name' => 'Item', 'prefix' => 'item'], function () {
-        Route::get('/', [ItemController::class, 'index']);
-        Route::post('/create', [ItemController::class, 'store']);
-        Route::delete('/{id}', [ItemController::class, 'destroy']);
-    });
-
-    Route::group(['name' => 'FeatureItem'], function () {
-        Route::post('featureItem/create', [FeatureItemController::class, 'store']);
-    });
-
-    Route::group(['name' => 'Reservation'], function () {
-        Route::post('reservation/create', [ReservationController::class, 'store']);
-        Route::post('reservation/getDatesForItem', [ReservationController::class, 'getDatesForItem']);
-        Route::get('reservation/getReservation', [ReservationController::class, 'getReservation']);
+    Route::group(['name' => 'Reservation', 'prefix' => 'reservation'], function () {
+        Route::post('/create', [ReservationController::class, 'store']);
+        Route::post('/getDatesForItem', [ReservationController::class, 'getDatesForItem']);
     });
 
     Route::group(['name' => 'Users', 'prefix' => 'users'], function () {
-        Route::get('/', [UserController::class, 'index']);
-        Route::delete('/delete/{id}', [UserController::class, 'destory']);
         Route::post('/updatePhone/{id}', [UserController::class, 'updatePhone']);
         Route::get('/checkNumber/{id}', [UserController::class, 'checkNumber']);
     });
@@ -72,7 +82,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::group(['name' => 'Notifications', 'prefix' => 'notifications'], function () {
         Route::get('/', [NotificationController::class, 'show']);
     });
-    
+
 });
 
 Route::group(['name' => 'Category'], function () {

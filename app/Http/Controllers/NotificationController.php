@@ -14,6 +14,13 @@ class NotificationController extends Controller
     }
 
     public function show() {
-         return $this->successResponse('notifications', Notification::with('user')->where('user_id', auth()->id())->get(), 200);
+        $user = auth()->user();
+        if ($user->isAdmin()) {
+            return $this->successResponse('notifications', Notification::with('user')->get(), 200);
+
+        } else {
+            return $this->successResponse('notifications', Notification::with('user')->where('user_id', auth()->id())->get(), 200);
+        }
+
     }
 }

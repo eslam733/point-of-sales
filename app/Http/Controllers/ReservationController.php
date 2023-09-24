@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\SendNotifications;
 use App\Models\FeatureItem;
 use App\Models\Item;
+use App\Models\Notification;
 use App\Models\Reservation;
 use App\Models\ReservationItem;
 use Carbon\Carbon;
@@ -85,7 +86,7 @@ class ReservationController extends Controller
 
         $item = Item::where('id', $data['item_id'])->first();
         SendNotifications::dispatch(auth()->id(),
-        'new reservation at ' . $data['startDate'] . ', item: ' . $item->name);
+        'new reservation(' . $reservation->id . ') at ' . $data['startDate'] . ', item: ' . $item->name);
 
         return $this->successResponse('reservation created', $reservation, 200);
 
@@ -225,7 +226,7 @@ class ReservationController extends Controller
             'endTime' => explode(' ', $reservation->end_date)[1],
         ];
 
-        SendNotifications::dispatch($reservation->user->id, 'Your reservation ' . $reservation->id . ' has been ' . $data['status']);
+        SendNotifications::dispatch($reservation->user->id, 'Your reservation ' . $reservation->id . ' has been ' . $data['status'], Notification::$user);
 
         Mail::send('reservations.reservation_status', $mailData, function ($message) use ($reservation) {
             $message->from(env('MAIL_FROM_ADDRESS'));

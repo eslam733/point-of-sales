@@ -3,6 +3,7 @@
 namespace App\Events;
 
 use App\Http\Controllers\NotificationController;
+use App\Models\Notification;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -18,12 +19,12 @@ class SendNotifications
     /**
      * Create a new event instance.
      */
-    public function __construct($userId, $message)
+    public function __construct($userId, $message, $type)
     {
 
         $notificationController = new NotificationController();
-        $notificationController->store($userId, $message);
-        
+        $notificationController->store($userId, $message, $type ?? Notification::$all);
+
     }
 
     /**

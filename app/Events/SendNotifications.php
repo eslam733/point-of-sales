@@ -19,7 +19,7 @@ class SendNotifications
     /**
      * Create a new event instance.
      */
-    public function __construct($userId, $message, $type)
+    public function __construct($userId, $message, $type = null)
     {
 
         $notificationController = new NotificationController();

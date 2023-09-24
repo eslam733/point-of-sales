@@ -18,12 +18,18 @@ class NotificationController extends Controller
         $user = auth()->user();
         if ($user->isAdmin()) {
             return $this->successResponse('notifications',
-                Notification::with('user')->whereIn('type', [Notification::$all, Notification::$admin])->get(),
+                Notification::with('user')
+                    ->whereIn('type', [Notification::$all, Notification::$admin])
+                    ->orderBy('id', 'desc')
+                    ->get(),
                 200);
 
         } else {
             return $this->successResponse('notifications',
-                Notification::with('user')->whereIn('type', [Notification::$all, Notification::$user])->where('user_id', auth()->id())->get(),
+                Notification::with('user')->whereIn('type', [Notification::$all, Notification::$user])
+                    ->where('user_id', auth()->id())
+                    ->orderBy('id', 'desc')
+                    ->get(),
                 200);
         }
 

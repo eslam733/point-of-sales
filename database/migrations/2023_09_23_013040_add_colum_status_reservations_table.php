@@ -13,7 +13,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('reservations', function (Blueprint $table) {
-            $table->enum('status', [Reservation::$approve, Reservation::$pending, Reservation::$reject])->default('pending')->after('item_id');
+            $table->enum('status', [
+                Reservation::$approve,
+                Reservation::$pending,
+                Reservation::$reject,
+                Reservation::$closed
+            ])->default('pending')->after('item_id');
         });
     }
 

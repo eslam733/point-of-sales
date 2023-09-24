@@ -22,6 +22,7 @@ class Reservation extends Model
     public static string $approve = 'approve';
     public static string $reject = 'reject';
     public static string $pending = 'pending';
+    public static string $closed = 'closed';
 
     public function reservationItems() {
         return $this->hasMany(ReservationItem::class, 'reservation_id', 'id');

@@ -65,12 +65,17 @@ class ReservationController extends Controller
         ::whereIn('id', $data['features_item'])
         ->pluck('id');
 
+        $user = auth()->user();
+
+        $closed = $user->isAdmin();
+
         $reservation = Reservation::create([
             'start_date' => $data['startDate'],
             'end_date' => $data['endDate'],
             'price' => $price,
-            'user_id' => auth()->id(),
+            'user_id' => $user->id,
             'item_id' => $data['item_id'],
+            'status' => $closed ? Reservation::$closed : Reservation::$pending,
         ]);
 
         $itemsToInsert = [];
@@ -84,9 +89,11 @@ class ReservationController extends Controller
 
         ReservationItem::insert($itemsToInsert);
 
-        $item = Item::where('id', $data['item_id'])->first();
-        SendNotifications::dispatch(auth()->id(),
-        'new reservation(' . $reservation->id . ') at ' . $data['startDate'] . ', item: ' . $item->name);
+        if (!$closed) {
+            $item = Item::where('id', $data['item_id'])->first();
+            SendNotifications::dispatch(auth()->id(),
+                'new reservation(' . $reservation->id . ') at ' . $data['startDate'] . ', item: ' . $item->name);
+        }
 
         return $this->successResponse('reservation created', $reservation, 200);
 

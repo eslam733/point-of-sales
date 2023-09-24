@@ -159,7 +159,7 @@ class ReservationController extends Controller
                 ->whereIn('feature_item_id', $featuresItemsIds)
                 ->where('start_date', '<=', $temp)
                 ->where('end_date', '>', $temp)
-                ->whereIn('status', [Reservation::$pending, Reservation::$approve])
+                ->whereIn('status', [Reservation::$pending, Reservation::$approve, Reservation::$closed])
                 ->first();
 
             if (!empty($days)) {

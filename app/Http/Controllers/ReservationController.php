@@ -95,7 +95,7 @@ class ReservationController extends Controller
                 'new reservation(' . $reservation->id . ') at ' . $data['startDate'] . ', item: ' . $item->name);
         }
 
-        return $this->successResponse('reservation created', $reservation, 200);
+        return $this->successResponse($closed ? 'Time has been closed' : 'reservation created', $reservation, 200);
 
     }
 

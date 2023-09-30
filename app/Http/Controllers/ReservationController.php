@@ -182,12 +182,14 @@ class ReservationController extends Controller
                 ::with('user')
                 ->with('item')
                 ->with('reservationItems.featureItem')
+                ->where('status', '!=', 'closed')
                 ->get();
         } else {
             $reservation = Reservation
                 ::with('user')
                 ->with('item')
                 ->with('reservationItems.featureItem')
+                ->where('status', '!=', 'closed')
                 ->where('user_id', $user->id)
                 ->get();
         }

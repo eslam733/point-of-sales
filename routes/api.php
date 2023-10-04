@@ -79,6 +79,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::group(['name' => 'Users', 'prefix' => 'users'], function () {
         Route::post('/updatePhone/{id}', [UserController::class, 'updatePhone']);
+        Route::post('/updateDeviceToken/{id}', [UserController::class, 'updateDeviceToken']);
         Route::get('/checkNumber/{id}', [UserController::class, 'checkNumber']);
     });
 

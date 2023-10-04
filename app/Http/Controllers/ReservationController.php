@@ -8,6 +8,7 @@ use App\Models\Item;
 use App\Models\Notification;
 use App\Models\Reservation;
 use App\Models\ReservationItem;
+use App\Notifications\FirebaseNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -235,7 +236,8 @@ class ReservationController extends Controller
             'endTime' => explode(' ', $reservation->end_date)[1],
         ];
 
-        SendNotifications::dispatch($reservation->user->id, 'Your reservation ' . $reservation->id . ' has been ' . $data['status'], Notification::$user);
+//        SendNotifications::dispatch($reservation->user->id, 'Your reservation ' . $reservation->id . ' has been ' . $data['status'], Notification::$user);
+        $reservation->user->notify(new FirebaseNotification());
 
         Mail::send('reservations.reservation_status', $mailData, function ($message) use ($reservation) {
             $message->from(env('MAIL_FROM_ADDRESS'));

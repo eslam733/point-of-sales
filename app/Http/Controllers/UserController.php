@@ -17,24 +17,48 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'phone' => ['required'],
         ]);
-    
+
         if ($validator->fails()) {
             return $this->errorResponse('Validation error', $validator->errors(), 400);
         }
 
         $phone = $request->get('phone');
 
-        $user = User::where('id', $id)->first();
+        $user = auth()->user();
 
         if (empty($user)) {
             return $this->errorResponse('User not found', [], 404);
         }
 
-        User::where('id', $id)->update([
+        User::where('id', $user->id)->update([
             'phone' => $phone,
         ]);
 
         return $this->successResponse('Phone updated', [], 200);
+    }
+
+    public function updateDeviceToken(Request $request, $id) {
+        $validator = Validator::make($request->all(), [
+            'deviceToken' => ['required'],
+        ]);
+
+        if ($validator->fails()) {
+            return $this->errorResponse('Validation error', $validator->errors(), 400);
+        }
+
+        $deviceToken = $request->get('deviceToken');
+
+        $user = auth()->user();
+
+        if (empty($user)) {
+            return $this->errorResponse('User not found', [], 404);
+        }
+
+        User::where('id', $user->id)->update([
+            'device_token' => $deviceToken,
+        ]);
+
+        return $this->successResponse('Device Token updated', [], 200);
     }
 
     public function checkNumber(Request $request,  $id) {

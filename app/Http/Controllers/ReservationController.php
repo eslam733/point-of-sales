@@ -236,14 +236,14 @@ class ReservationController extends Controller
             'endTime' => explode(' ', $reservation->end_date)[1],
         ];
 
-//        SendNotifications::dispatch($reservation->user->id, 'Your reservation ' . $reservation->id . ' has been ' . $data['status'], Notification::$user);
-        $reservation->user->notify(new FirebaseNotification());
-
         Mail::send('reservations.reservation_status', $mailData, function ($message) use ($reservation) {
             $message->from(env('MAIL_FROM_ADDRESS'));
             $message->to($reservation->user->email);
             $message->subject('Reservation Status');
         });
+
+        SendNotifications::dispatch($reservation->user->id, 'Your reservation ' . $reservation->id . ' has been ' . $data['status'], Notification::$user);
+
 
         return $this->successResponse('Reservation has been updated', [], 200);
     }

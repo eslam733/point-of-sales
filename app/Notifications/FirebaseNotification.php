@@ -14,12 +14,14 @@ class FirebaseNotification extends Notification
 {
     use Queueable;
     private $messaging;
+    private $notificationBody;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct()
+    public function __construct($notificationBody)
     {
+        $this->notificationBody = $notificationBody;
         $this->messaging = (new Factory)
             ->withServiceAccount(storage_path('app/public/goblins-50e94-firebase-adminsdk-jyq12-f3bb0ca541.json'))
             ->createMessaging();
@@ -29,10 +31,9 @@ class FirebaseNotification extends Notification
     public function via($notifiable)
     {
         $message = CloudMessage::withTarget('token', $notifiable->device_token)
-            ->withNotification(['title' => 'Your Notification Title', 'body' => 'Your Notification Body'])
-            ->withData(['custom_data' => 'your_custom_data']);
+            ->withNotification(['title' => 'Reservation Status', 'body' => $this->notificationBody]);
 
-        return $this->messaging->send($message);
+        $this->messaging->send($message);
     }
 
     /**

@@ -56,7 +56,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         });
 
         Route::group(['name' => 'Reservation', 'prefix' => 'reservation'], function () {
-            Route::get('/getReservation', [ReservationController::class, 'getReservation']);
+            Route::post('/getReservation', [ReservationController::class, 'getReservation']);
             Route::post('/{id}/changeStatus', [ReservationController::class, 'changeStatus']);
         });
 

@@ -177,25 +177,32 @@ class ReservationController extends Controller
     {
 
         $user = auth()->user();
+        $data = $request->all();
 
-        if ($user->isAdmin()) {
-            $reservation = Reservation
-                ::with('user')
-                ->with('item')
-                ->with('reservationItems.featureItem')
-                ->where('status', '!=', 'closed')
-                ->get();
-        } else {
-            $reservation = Reservation
-                ::with('user')
-                ->with('item')
-                ->with('reservationItems.featureItem')
-                ->where('status', '!=', 'closed')
-                ->where('user_id', $user->id)
-                ->get();
+        $validator = Validator::make($data, [
+            'day' => ['date_format:' . $this->dayFormat],
+        ]);
+
+        if ($validator->fails()) {
+            return $this->errorResponse('Validation error', $validator->errors(), 400);
         }
 
-        return $this->successResponse('Reservation', $reservation, 200);
+        $query = Reservation
+            ::with('user')
+            ->with('item')
+            ->with('reservationItems.featureItem')
+            ->where('status', '!=', 'closed');
+
+        if (!$user->isAdmin()) {
+            $query = $query
+                ->where('user_id', $user->id);
+        }
+
+        if (!empty($data['day'])) {
+            $query = $query->where('start_date', 'like', '%' . $data['day'] . '%');
+        }
+
+        return $this->successResponse('Reservation', $query->get(), 200);
     }
 
     public function changeStatus(Request $request, $id) {

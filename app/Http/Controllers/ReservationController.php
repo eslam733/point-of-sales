@@ -93,7 +93,10 @@ class ReservationController extends Controller
         if (!$closed) {
             $item = Item::where('id', $data['item_id'])->first();
             SendNotifications::dispatch(auth()->id(),
-                'new reservation(' . $reservation->id . ') at ' . $data['startDate'] . ', item: ' . $item->name);
+                'new reservation(' . $reservation->id . ') at ' . $data['startDate'] . ', item: ' . $item->name,
+                null,
+                $reservation->id,
+                Notification::$readonly);
         }
 
         return $this->successResponse($closed ? 'Time has been closed' : 'reservation created', $reservation, 200);
@@ -131,11 +134,11 @@ class ReservationController extends Controller
                 $data['features_item'],
             );
 
-            array_push($avaliableTimes, array(
+            $avaliableTimes[] = array(
                 "start" => $start->format($this->timeFormat),
                 "end" => $end->format($this->timeFormat),
                 "status" => $status,
-            ));
+            );
 
             $time->addHours(1);
         }
@@ -249,7 +252,11 @@ class ReservationController extends Controller
             $message->subject('Reservation Status');
         });
 
-        SendNotifications::dispatch($reservation->user->id, 'Your reservation ' . $reservation->id . ' has been ' . $data['status'], Notification::$user);
+        SendNotifications::dispatch($reservation->user->id,
+            'Your reservation ' . $reservation->id . ' has been ' . $data['status'],
+            Notification::$user,
+            $reservation->id,
+            Notification::$readonly);
 
 
         return $this->successResponse('Reservation has been updated', [], 200);

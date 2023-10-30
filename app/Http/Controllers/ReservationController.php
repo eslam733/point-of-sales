@@ -96,7 +96,7 @@ class ReservationController extends Controller
                 'new reservation(' . $reservation->id . ') at ' . $data['startDate'] . ', item: ' . $item->name,
                 null,
                 $reservation->id,
-                Notification::$readonly);
+                Notification::$reservation);
         }
 
         return $this->successResponse($closed ? 'Time has been closed' : 'reservation created', $reservation, 200);

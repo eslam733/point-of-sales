@@ -21,11 +21,16 @@ class SendNotifications
     /**
      * Create a new event instance.
      */
-    public function __construct($userId, $message, $type = null)
+    public function __construct($userId, $message, $type = null, $reservationId = null, $action = null)
     {
         $user = User::where('id', $userId)->first();
         $notificationController = new NotificationController();
-        $notificationController->store($userId, $message, $type ?? Notification::$all);
+
+        if ($action == null) {
+            $action = Notification::$readonly;
+        }
+
+        $notificationController->store($userId, $message, $type ?? Notification::$all, $reservationId, $action);
         $user->notify(new FirebaseNotification($message));
     }
 

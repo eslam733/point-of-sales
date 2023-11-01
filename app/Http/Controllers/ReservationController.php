@@ -271,4 +271,13 @@ class ReservationController extends Controller
 
         return $this->successResponse('success', $reservation, 200);
     }
+
+    public function canceledReservation(Request $request, $id) {
+        Reservation::where('id', $id)
+            ->update([
+                'status' => Reservation::$canceled
+            ]);
+
+        return $this->successResponse('success', [], 200);
+    }
 }

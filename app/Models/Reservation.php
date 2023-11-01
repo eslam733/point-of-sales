@@ -36,4 +36,8 @@ class Reservation extends Model
         return $this->belongsTo(Item::class, 'item_id', 'id');
     }
 
+    public function itemFeatures() {
+        return $this->hasMany(ReservationItem::class, 'reservation_id', 'id');
+    }
+
 }

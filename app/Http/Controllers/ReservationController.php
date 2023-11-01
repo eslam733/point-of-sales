@@ -261,4 +261,14 @@ class ReservationController extends Controller
 
         return $this->successResponse('Reservation has been updated', [], 200);
     }
+
+    public function myReservation(Request $request) {
+        $user = auth()->user();
+
+        $reservation = Reservation::with(['item', 'itemFeatures', 'itemFeatures.featureItem'])
+            ->where('user_id', $user->id)
+            ->get();
+
+        return $this->successResponse('success', $reservation, 200);
+    }
 }

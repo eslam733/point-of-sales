@@ -274,6 +274,7 @@ class ReservationController extends Controller
 
     public function canceledReservation(Request $request, $id) {
         Reservation::where('id', $id)
+            ->orderBy('created_at', 'desc')
             ->update([
                 'status' => Reservation::$canceled
             ]);

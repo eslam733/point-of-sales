@@ -17,6 +17,7 @@ class Reservation extends Model
         'item_id',
         'price',
         'status',
+        'update_at'
     ];
 
     public static string $approve = 'approve';

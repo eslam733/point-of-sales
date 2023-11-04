@@ -30,7 +30,6 @@ class NotifyBeforeHourCommand extends Command
     public function handle()
     {
         $oneHourNext = now()->addHour()->second(0);
-        Log::error($oneHourNext);
         $reservations = Reservation::with(['user'])
             ->where('status', Reservation::$approve)
             ->where('start_date', $oneHourNext)

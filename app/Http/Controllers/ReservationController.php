@@ -222,10 +222,10 @@ class ReservationController extends Controller
 
         $reservation = Reservation::with(['user', 'item', 'reservationItems' => function ($query) {
             $query->with(['featureItem']);
-        }])->where('id', $id)->first();
+        }])->where('status', '<>', Reservation::$canceled)->find($id);
 
         if (empty($reservation)) {
-            return $this->errorResponse('Reservation not found', $validator->errors(), 404);
+            return $this->errorResponse('Reservation not found or Canceled', $validator->errors(), 404);
         }
 
         $reservation->update([

@@ -35,8 +35,9 @@ class NotifyBeforeHourCommand extends Command
             ->where('status', Reservation::$approve)
             ->where('start_date', $oneHourNext)
             ->get();
-
+        Log::error($oneHourNext);
         foreach ($reservations as $reservation) {
+            Log::error($reservation->id);
             SendNotifications::dispatch($reservation->user->id,
                 'One hour left for reservation number: ' . $reservation->id,
                 Notification::$user,

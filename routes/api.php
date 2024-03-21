@@ -96,5 +96,11 @@ Route::group(['name' => 'Category'], function () {
 });
 
 
+Route::get('/test', function () {
+    $users = \App\Models\Role::get();
+
+    return $users;
+});
+
 
 

@@ -33,7 +33,8 @@ class NotifyBeforeHourCommand extends Command
             $oneHourNext = now()->addHour()->second(0);
             $reservations = Reservation::with(['user'])
                 ->where('status', Reservation::$approve)
-                ->where('start_date', $oneHourNext)
+                ->where('notified', false)
+                ->where('start_date', '<=', $oneHourNext)
                 ->get();
 
             Log::info($oneHourNext);
@@ -46,6 +47,10 @@ class NotifyBeforeHourCommand extends Command
                     Notification::$user,
                     $reservation->id,
                     Notification::$readonly);
+
+                $reservation->update([
+                    'notified' => true,
+                ]);
             }
         } catch (\Exception $e) {
             Log::error($e->getMessage());

@@ -15,8 +15,8 @@ RUN apt-get update && apt-get install -y \
 # Install Composer globally
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Copy the composer.json and composer.lock files and install dependencies
-COPY /composer.json /composer.lock .
+# Copy the composer.json file and install dependencies
+COPY /composer.json .
 RUN composer install --no-scripts
 
 # Copy the rest of the application source code

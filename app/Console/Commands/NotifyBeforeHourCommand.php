@@ -29,22 +29,24 @@ class NotifyBeforeHourCommand extends Command
      */
     public function handle()
     {
-        $oneHourNext = now()->addHour()->second(0);
-        $reservations = Reservation::with(['user'])
-            ->where('status', Reservation::$approve)
-            ->where('start_date', $oneHourNext)
-            ->get();
 
-        Log::info($oneHourNext);
-
-        foreach ($reservations as $reservation) {
-            Log::info($reservation->id);
-
-            SendNotifications::dispatch($reservation->user->id,
-                'One hour left for reservation number: ' . $reservation->id,
-                Notification::$user,
-                $reservation->id,
-                Notification::$readonly);
-        }
+        Log::info('cron jobs');
+//        $oneHourNext = now()->addHour()->second(0);
+//        $reservations = Reservation::with(['user'])
+//            ->where('status', Reservation::$approve)
+//            ->where('start_date', $oneHourNext)
+//            ->get();
+//
+//        Log::info($oneHourNext);
+//
+//        foreach ($reservations as $reservation) {
+//            Log::info($reservation->id);
+//
+//            SendNotifications::dispatch($reservation->user->id,
+//                'One hour left for reservation number: ' . $reservation->id,
+//                Notification::$user,
+//                $reservation->id,
+//                Notification::$readonly);
+//        }
     }
 }

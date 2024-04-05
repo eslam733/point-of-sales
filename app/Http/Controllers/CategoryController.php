@@ -17,7 +17,7 @@ class CategoryController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'min:2'],
         ]);
-    
+
         if ($validator->fails()) {
             return $this->errorResponse('Validation error', $validator->errors(), 400);
         }
@@ -34,7 +34,7 @@ class CategoryController extends Controller
      */
     public function show()
     {
-        $categories = Category::paginate(10);
+        $categories = Category::orderBy('id', 'desc')->paginate(10);
 
         return $this->successResponse('Category created', $categories ?? [], 200);
     }

@@ -1,0 +1,4 @@
+Dockerfile
+/vendor
+/package-lock.json
+/composer.lock

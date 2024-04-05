@@ -48,7 +48,8 @@ class NotifyBeforeHourCommand extends Command
                     $reservation->id,
                     Notification::$readonly);
 
-                $reservation->update([
+                Reservation::where('id', $reservation->id)
+                    ->update([
                     'notified' => true,
                 ]);
             }

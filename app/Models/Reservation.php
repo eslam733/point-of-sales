@@ -42,4 +42,14 @@ class Reservation extends Model
         return $this->hasMany(ReservationItem::class, 'reservation_id', 'id');
     }
 
+    public function getItemsName()
+    {
+        $itemsTitle = '';
+
+        foreach ($this->reservationItems as $reservationItem) {
+            $itemsTitle .= $reservationItem->featureItem->name . ', ' ;
+        }
+
+        return $itemsTitle;
+    }
 }

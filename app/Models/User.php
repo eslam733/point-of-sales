@@ -62,6 +62,11 @@ class User extends Authenticatable
         return $this->role->role_name == Role::$subAdmin;
     }
 
+    public function isGeneralAdmin()
+    {
+        return $this->isAdmin() || $this->isSubAdmin();
+    }
+
     public function role()
     {
         return $this->belongsTo(Role::class, 'role_id', 'id');

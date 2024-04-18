@@ -70,7 +70,7 @@ class ReservationController extends Controller
 
         $user = auth()->user();
 
-        $closed = $user->isAdmin();
+        $closed = $user->isGeneralAdmin();
 
         $reservation = Reservation::create([
             'start_date' => $data['startDate'],

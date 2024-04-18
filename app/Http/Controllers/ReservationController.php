@@ -107,7 +107,7 @@ class ReservationController extends Controller
             foreach ($admins as $admin) {
 
                 $mailData = [
-                    'status' => $data['status'],
+                    'status' => 'Pending',
                     'items' => $itemsTitle,
                     'day' => explode(' ', $reservation->start_date)[0],
                     'startTime' => explode(' ', $reservation->start_date)[1],

@@ -18,7 +18,7 @@ class NotificationController extends Controller
 
     public function show() {
         $user = auth()->user();
-        if ($user->isAdmin()) {
+        if ($user->isAdmin() || $user->isSubAdmin()) {
             return $this->successResponse('notifications',
                 Notification::with(['user'])
                     ->whereIn('type', [Notification::$all, Notification::$admin])

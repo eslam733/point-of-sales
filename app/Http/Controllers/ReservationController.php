@@ -8,6 +8,8 @@ use App\Models\Item;
 use App\Models\Notification;
 use App\Models\Reservation;
 use App\Models\ReservationItem;
+use App\Models\Role;
+use App\Models\User;
 use App\Notifications\FirebaseNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -98,6 +100,26 @@ class ReservationController extends Controller
                 null,
                 $reservation->id,
                 Notification::$reservation);
+
+            $admins = User::whereIn('role_id', [Role::getAdminRoleId(), Role::getSubAdminRoleId()])->get();
+            $itemsTitle = $reservation->getItemsName();
+
+            foreach ($admins as $admin) {
+
+                $mailData = [
+                    'status' => $data['status'],
+                    'items' => $itemsTitle,
+                    'day' => explode(' ', $reservation->start_date)[0],
+                    'startTime' => explode(' ', $reservation->start_date)[1],
+                    'endTime' => explode(' ', $reservation->end_date)[1],
+                ];
+
+                Mail::send('reservations.reservation_status', $mailData, function ($message) use ($admin) {
+                    $message->from(env('MAIL_FROM_ADDRESS'));
+                    $message->to($admin->email);
+                    $message->subject('New Reservation');
+                });
+            }
         }
 
         return $this->successResponse($closed ? 'Time has been closed' : 'reservation created', $reservation, 200);
@@ -197,7 +219,7 @@ class ReservationController extends Controller
             ->with('reservationItems.featureItem')
             ->where('status', '!=', 'closed');
 
-        if (!$user->isAdmin()) {
+        if (!($user->isAdmin() || $user->isSubAdmin())) {
             $query = $query
                 ->where('user_id', $user->id);
         }
@@ -233,11 +255,7 @@ class ReservationController extends Controller
             'status' => $request->get('status'),
         ]);
 
-        $itemsTitle = '';
-
-        foreach ($reservation->reservationItems as $reservationItem) {
-            $itemsTitle .= $reservationItem->featureItem->name . ', ' ;
-        }
+        $itemsTitle = $reservation->getItemsName();
 
         $mailData = [
             'status' => $data['status'],

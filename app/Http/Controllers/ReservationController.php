@@ -92,6 +92,7 @@ class ReservationController extends Controller
 
         if (!$closed) {
             $item = Item::where('id', $data['item_id'])->first();
+
             SendNotifications::dispatch(auth()->id(),
                 'new reservation(' . $reservation->id . ') at ' . $data['startDate'] . ', item: ' . $item->name,
                 null,
